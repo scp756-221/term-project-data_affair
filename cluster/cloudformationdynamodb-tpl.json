@@ -44,6 +44,28 @@
             "WriteCapacityUnits": "5"
           }
         }
+      },
+      "tablePurchases": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "TableName": "Purchase-ZZ-REG-ID",
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "purchase_id",
+              "AttributeType": "S"
+            }
+          ],
+          "KeySchema": [
+            {
+              "AttributeName": "purchase_id",
+              "KeyType": "HASH"
+            }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": "5",
+            "WriteCapacityUnits": "5"
+          }
+        }
       }
     },
     "Description": "DynamoDB tables for ZZ-AWS-ACCESS-KEY-ID"
