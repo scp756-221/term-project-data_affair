@@ -1,8 +1,8 @@
-# CMPT 756 transaction service
+# CMPT 756 purchase service
 
-The transaction service maintains a list of transactions with the following functionalities:
-- create transaction
-- update transaction
-- delete transaction
-- get details of a single transaction
-- get all transactions
+The purchase service maintains a list of purchases with the following functionalities:
+- create purchase
+- update purchase
+- delete purchase
+- get details of a single purchase
+- get all purchases

@@ -1,6 +1,6 @@
 """
 SFU CMPT 756
-Sample application---transaction service.
+Sample application---purchase service.
 """
 
 # Standard library modules
@@ -27,7 +27,7 @@ import simplejson as json
 app = Flask(__name__)
 
 metrics = PrometheusMetrics(app)
-metrics.info('app_info', 'Transaction process')
+metrics.info('app_info', 'purchase process')
 
 bp = Blueprint('app', __name__)
 
@@ -82,18 +82,18 @@ def list_all():
         return Response(json.dumps({"error": "missing auth"}),
                         status=401,
                         mimetype='application/json')
-    # list all transactions here
+    # list all purchases here
     return {}
 
 
-@bp.route('/<transaction_id>', methods=['PUT'])
-def update_transaction(transaction_id):
+@bp.route('/<purchase_id>', methods=['PUT'])
+def update_purchase(purchase_id):
     """
     Summary line:
-        Updates the transactions table, whenever an exchange is carried out
+        Updates the purchases table, whenever an exchange is carried out
   
     Parameters:
-        transaction_id : Original transaction id is the incoming parameter
+        purchase_id : Original purchase id is the incoming parameter
   
     Returns:
         The response code for success.
@@ -106,8 +106,8 @@ def update_transaction(transaction_id):
                         mimetype='application/json')
     try:
         content = request.get_json()
-        # TODO update the transaction with fields accordingly
-        transaction_id = content['transaction_id']
+        # TODO update the purchase with fields accordingly
+        purchase_id = content['purchase_id']
         music_id = content['music_id']
         user_id = content['user_id']
         timestamp = content['timestamp']
@@ -117,16 +117,16 @@ def update_transaction(transaction_id):
     url = db['name'] + '/' + db['endpoint'][3]
     response = requests.put(
         url,
-        params={"objtype": "transaction", "objkey": transaction_id},
-        json={"transaction_id": transaction_id, "music_id": music_id,
+        params={"objtype": "purchase", "objkey": purchase_id},
+        json={"purchase_id": purchase_id, "music_id": music_id,
               "user_id": user_id, "timestamp":timestamp, "purchase_amount": purchase_amount },
         headers={'Authorization': headers['Authorization']})
     return (response.json())
 
 @bp.route('/', methods=['POST'])
-def create_transaction():
+def create_purchase():
     """
-    Create a transaction.
+    Create a purchase.
     If a record already exists with the same fname, lname, and email,
     the old UUID is replaced with a new one.
   
@@ -141,7 +141,7 @@ def create_transaction():
     
     """
     try:
-        # TODO create the transaction with fields accordingly
+        # TODO create the purchase with fields accordingly
         content = request.get_json()
         music_id = content['music_id']
         user_id = content['user_id']
@@ -152,7 +152,7 @@ def create_transaction():
     url = db['name'] + '/' + db['endpoint'][1]
     response = requests.post(
         url,
-        json={"objtype": "transaction",
+        json={"objtype": "purchase",
               "music_id": music_id,
               "user_id": user_id,
               "timestamp": timestamp,
@@ -161,8 +161,8 @@ def create_transaction():
     return (response.json())
 
 
-@bp.route('/<transaction_id>', methods=['DELETE'])
-def delete_transaction(transaction_id):
+@bp.route('/<purchase_id>', methods=['DELETE'])
+def delete_purchase(purchase_id):
     """
     Summary line.
   
@@ -175,7 +175,7 @@ def delete_transaction(transaction_id):
     int: Description of return value
   
     """
-    # TODO delete the transaction with fields accordingly
+    # TODO delete the purchase with fields accordingly
     headers = request.headers
     # check header here
     if 'Authorization' not in headers:
@@ -185,20 +185,20 @@ def delete_transaction(transaction_id):
     url = db['name'] + '/' + db['endpoint'][2]
 
     response = requests.delete(url,
-                               params={"objtype": "transaction", "objkey": transaction_id})
+                               params={"objtype": "purchase", "objkey": purchase_id})
     return (response.json())
 
 
-@bp.route('/<transaction_id>', methods=['GET'])
-def get_transaction(transaction_id):
+@bp.route('/<purchase_id>', methods=['GET'])
+def get_purchase(purchase_id):
     """
-    Get details of a single transaction by transaction id.
+    Get details of a single purchase by purchase id.
   
     Parameters:
-    transaction_id (int): transaction id
+    purchase_id (int): purchase id
   
     Returns:
-    obj: transaction details for transaction given by transaction_id
+    obj: purchase details for purchase given by purchase_id
   
     """
     headers = request.headers
@@ -208,7 +208,7 @@ def get_transaction(transaction_id):
             json.dumps({"error": "missing auth"}),
             status=401,
             mimetype='application/json')
-    payload = {"objtype": "transaction", "objkey": transaction_id}
+    payload = {"objtype": "purchase", "objkey": purchase_id}
     url = db['name'] + '/' + db['endpoint'][0]
     response = requests.get(url, params=payload)
     return (response.json())
@@ -244,7 +244,7 @@ def get_transaction(transaction_id):
 # All database calls will have this prefix.  Prometheus metric
 # calls will not---they will have route '/metrics'.  This is
 # the conventional organization.
-app.register_blueprint(bp, url_prefix='/api/v1/transaction/')
+app.register_blueprint(bp, url_prefix='/api/v1/purchase/')
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
