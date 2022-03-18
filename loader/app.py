@@ -4,9 +4,12 @@ Loader for sample database
 """
 
 # Standard library modules
+from datetime import datetime
+
 import csv
 import os
 import time
+import argparse
 
 # Installed packages
 import requests
@@ -20,11 +23,6 @@ loader_token = os.getenv('SVC_LOADER_TOKEN')
 # Istio injection.  `cluster/loader-tpl.yaml`
 # sets that value.
 INITIAL_WAIT_SEC = 1
-
-db = {
-    "name": "http://cmpt756db:30002/api/v1/datastore",
-}
-
 
 def build_auth():
     """Return a loader Authorization header in Basic format"""
@@ -67,11 +65,61 @@ def create_song(artist, title, uuid):
     return (response.json())
 
 
+def create_purchase(user_id, music_id, purchase_amt, uuid):
+    """
+    Create a purchase.
+    If a record already exists with the same user and music,
+    the old UUID is replaced with this one.
+    """
+    url = db['name'] + '/load'
+    response = requests.post(
+        url,
+        auth=build_auth(),
+        json={"objtype": "purchase",
+              "user_id": user_id,
+              "music_id": music_id,
+              "purchase_amt": purchase_amt,
+              "timestamp": datetime.now().isoformat(),
+              "uuid": uuid})
+    return (response.json())
+
+
 def check_resp(resp, key):
     if 'http_status_code' in resp:
         return None
     else:
         return resp[key]
+
+def parse_args():
+    """Parse the command-line arguments.
+
+    Returns
+    -------
+    db_url
+        The url of the DB service
+    """
+    argp = argparse.ArgumentParser(
+        'loader',
+        description='Application to load data to dynamodb database'
+        )
+    argp.add_argument(
+        '-D', '--domain',
+        help="DNS name or IP address of db service",
+        required=False,
+        default="cmpt756db"
+        )
+    argp.add_argument(
+        '-P', '--port',
+        type=int,
+        help="Port number of db service.",
+        required=False,
+        default="30002"
+        )
+    args = argp.parse_args()
+    db_url = "http://{}:{}/api/v1/datastore".format(
+        args.domain, args.port)
+    
+    return db_url
 
 
 if __name__ == '__main__':
@@ -79,6 +127,10 @@ if __name__ == '__main__':
     time.sleep(INITIAL_WAIT_SEC)
 
     resource_dir = '/data'
+
+    db = {
+        'name': parse_args() 
+    }
 
     with open('{}/users/users.csv'.format(resource_dir), 'r') as inp:
         rdr = csv.reader(inp)
@@ -107,3 +159,18 @@ if __name__ == '__main__':
                 print('Error creating song {} {}, {}'.format(artist,
                                                              title,
                                                              uuid))
+
+    with open('{}/purchase/purchase.csv'.format(resource_dir), 'r') as inp:
+        rdr = csv.reader(inp)
+        next(rdr)  # Skip header
+        for uuid, user_id, music_id, purchase_amt in rdr:
+            resp = create_purchase(user_id,
+                               music_id,
+                               purchase_amt,
+                               uuid)
+            resp = check_resp(resp, 'purchase_id')
+            if resp is None or resp != uuid:
+                print('Error creating purchase {} {}, {}'.format(user_id,
+                                                             music_id,
+                                                             uuid))
+
