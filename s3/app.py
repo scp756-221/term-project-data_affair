@@ -189,18 +189,15 @@ def delete_transaction(transaction_id):
 @bp.route('/<transaction_id>', methods=['GET'])
 def get_transaction(transaction_id):
     """
-    Summary line.
-  
-    Extended description of function.
+    Get details of a single transaction by transaction id.
   
     Parameters:
-    arg1 (int): Description of arg1
+    transaction_id (int): transaction id
   
     Returns:
-    int: Description of return value
+    obj: transaction details for transaction given by transaction_id
   
     """
-    # TODO update the transaction with fields accordingly
     headers = request.headers
     # check header here
     if 'Authorization' not in headers:
