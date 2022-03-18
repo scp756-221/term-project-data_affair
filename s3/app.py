@@ -143,18 +143,21 @@ def create_transaction():
     try:
         # TODO create the transaction with fields accordingly
         content = request.get_json()
-        lname = content['lname']
-        email = content['email']
-        fname = content['fname']
+        music_id = content['music_id']
+        user_id = content['user_id']
+        timestamp = content['timestamp']
+        purchase_amount = content['purchase_amount']
     except Exception:
         return json.dumps({"message": "error reading arguments"})
     url = db['name'] + '/' + db['endpoint'][1]
     response = requests.post(
         url,
         json={"objtype": "transaction",
-              "lname": lname,
-              "email": email,
-              "fname": fname})
+              "music_id": music_id,
+              "user_id": user_id,
+              "timestamp": timestamp,
+              "purchase_amount": purchase_amount
+            })
     return (response.json())
 
 
