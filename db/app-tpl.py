@@ -104,6 +104,22 @@ def read():
                            KeyConditionExpression=Key(table_id).eq(objkey))
     return response
 
+@bp.route('/fetch', methods=['GET'])
+def fetch():
+    headers = request.headers  # noqa: F841
+    # check header here
+    objtype = urllib.parse.unquote_plus(request.args.get('objtype'))
+    keytype = urllib.parse.unquote_plus(request.args.get('keytype'))
+    objkey = urllib.parse.unquote_plus(request.args.get('objkey'))
+    table_name = objtype.capitalize()+"-ZZ-REG-ID"
+    filter_key = keytype + "_id"
+    filter_index = filter_key + "-index"
+    table = dynamodb.Table(table_name)
+    response = table.query(Select='ALL_ATTRIBUTES',
+                           IndexName=filter_index,
+                           KeyConditionExpression=Key(filter_key).eq(objkey))
+    return response
+
 
 @bp.route('/write', methods=['POST'])
 def write():
