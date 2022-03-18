@@ -82,22 +82,21 @@ def list_all():
         return Response(json.dumps({"error": "missing auth"}),
                         status=401,
                         mimetype='application/json')
-    # list all songs here
+    # list all transactions here
     return {}
 
 
 @bp.route('/<transaction_id>', methods=['PUT'])
 def update_transaction(transaction_id):
     """
-    Summary line.
-  
-    Extended description of function.
+    Summary line:
+        Updates the transactions table, whenever an exchange is carried out
   
     Parameters:
-    arg1 (int): Description of arg1
+        transaction_id : Original transaction id is the incoming parameter
   
     Returns:
-    int: Description of return value
+        The response code for success.
   
     """
     headers = request.headers
@@ -108,18 +107,21 @@ def update_transaction(transaction_id):
     try:
         content = request.get_json()
         # TODO update the transaction with fields accordingly
-        email = content['email']
-        fname = content['fname']
-        lname = content['lname']
+        transaction_id = content['transaction_id']
+        music_id = content['music_id']
+        user_id = content['user_id']
+        timestamp = content['timestamp']
+        purchase_amount = content['purchase_amount']
     except Exception:
         return json.dumps({"message": "error reading arguments"})
     url = db['name'] + '/' + db['endpoint'][3]
     response = requests.put(
         url,
         params={"objtype": "transaction", "objkey": transaction_id},
-        json={"email": email, "fname": fname, "lname": lname})
+        json={"transaction_id": transaction_id, "music_id": music_id,
+              "user_id": user_id, "timestamp":timestamp, "purchase_amount": purchase_amount },
+        headers={'Authorization': headers['Authorization']})
     return (response.json())
-
 
 @bp.route('/', methods=['POST'])
 def create_transaction():
