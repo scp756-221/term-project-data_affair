@@ -37,7 +37,8 @@ db = {
         "read",
         "write",
         "delete",
-        "update"
+        "update",
+        "fetch"
     ]
 }
 
@@ -62,29 +63,6 @@ def readiness():
     return Response("", status=200, mimetype="application/json")
 
 
-@bp.route('/', methods=['GET'])
-def list_all():
-    """
-    Summary line.
-  
-    Extended description of function.
-  
-    Parameters:
-    arg1 (int): Description of arg1
-  
-    Returns:
-    int: Description of return value
-  
-    """
-    headers = request.headers
-    # check header here
-    if 'Authorization' not in headers:
-        return Response(json.dumps({"error": "missing auth"}),
-                        status=401,
-                        mimetype='application/json')
-    # list all purchases here
-    return {}
-
 
 @bp.route('/<purchase_id>', methods=['PUT'])
 def update_purchase(purchase_id):
@@ -96,7 +74,7 @@ def update_purchase(purchase_id):
         purchase_id : Original purchase id is the incoming parameter
   
     Returns:
-        The response code for success.
+        The response for updated purchase.
   
     """
     headers = request.headers
@@ -213,33 +191,29 @@ def get_purchase(purchase_id):
     response = requests.get(url, params=payload)
     return (response.json())
 
-
-# @bp.route('/login', methods=['PUT'])
-# def login():
-#     try:
-#         content = request.get_json()
-#         uid = content['uid']
-#     except Exception:
-#         return json.dumps({"message": "error reading parameters"})
-#     url = db['name'] + '/' + db['endpoint'][0]
-#     response = requests.get(url, params={"objtype": "user", "objkey": uid})
-#     data = response.json()
-#     if len(data['Items']) > 0:
-#         encoded = jwt.encode({'user_id': uid, 'time': time.time()},
-#                              'secret',
-#                              algorithm='HS256')
-#     return encoded
-
-
-# @bp.route('/logoff', methods=['PUT'])
-# def logoff():
-#     try:
-#         content = request.get_json()
-#         _ = content['jwt']
-#     except Exception:
-#         return json.dumps({"message": "error reading parameters"})
-#     return {}
-
+@bp.route('/byuser/<user_id>', methods=['GET'])
+def get_purchase_by_user(user_id):
+    """
+    Get details of purchases by user id.
+  
+    Parameters:
+    user_id (int): user id
+  
+    Returns:
+    obj: purchase details for purchases given by user id
+  
+    """
+    headers = request.headers
+    # check header here
+    if 'Authorization' not in headers:
+        return Response(
+            json.dumps({"error": "missing auth"}),
+            status=401,
+            mimetype='application/json')
+    payload = {"objtype": "purchase", "objkey": user_id, "keytype": "user"}
+    url = db['name'] + '/' + db['endpoint'][4]
+    response = requests.get(url, params=payload)
+    return (response.json())
 
 # All database calls will have this prefix.  Prometheus metric
 # calls will not---they will have route '/metrics'.  This is
