@@ -1,5 +1,5 @@
 """
-Create the Music and User tables
+Create the Music, User and Purchase tables
 
 This is intended to be used within a continuous integration test.
 As such, it presumes that it is creating the tables in a local
@@ -18,8 +18,8 @@ import boto3
 
 
 # Function definitions
-def create_tables(url, region, access_key_id, secret_access_key, music, user):
-    """ Create the music and user tables in DynamoDB.
+def create_tables(url, region, access_key_id, secret_access_key, music, user, purchase):
+    """ Create the music, user and purchase tables in DynamoDB.
 
     Parameters
     ----------
@@ -43,6 +43,8 @@ def create_tables(url, region, access_key_id, secret_access_key, music, user):
         Name of the music table.
     user: string
         Name of the user table.
+    purchase: string
+        Name of the purchase table.
     """
     dynamodb = boto3.resource(
         'dynamodb',
@@ -72,9 +74,18 @@ def create_tables(url, region, access_key_id, secret_access_key, music, user):
         ProvisionedThroughput={
             "ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
     )
+    pt = dynamodb.create_table(
+        TableName=purchase,
+        AttributeDefinitions=[{
+            "AttributeName": "purchase_id", "AttributeType": "S"}],
+        KeySchema=[{"AttributeName": "purchase_id", "KeyType": "HASH"}],
+        ProvisionedThroughput={
+            "ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
+    )
     """
     The order in which we wait for the tables is irrelevant.  We can only
-    proceed after both exist.
+    proceed after all exists.
     """
     mt.wait_until_exists()
     ut.wait_until_exists()
+    pt.wait_until_exists()

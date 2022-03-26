@@ -2,7 +2,7 @@
 Configure for pytest.
 
 Parses the command-line arguments, reads the environment variables,
-and then creates the two DynamoDB tables before executing the tests.
+and then creates the three DynamoDB tables before executing the tests.
 
 The tests all assume that these tables have already been created.
 
@@ -49,6 +49,15 @@ def pytest_addoption(parser):
         help="Port number of music service."
         )
     parser.addoption(
+        '--purchase_address',
+        help="DNS name or IP address of purchase service."
+        )
+    parser.addoption(
+        '--purchase_port',
+        type=int,
+        help="Port number of purchase service."
+        )
+    parser.addoption(
         '--table_suffix',
         help="Suffix to add to table names (not including leading "
              "'-').  If suffix is 'scp756-2022', the music table "
@@ -77,6 +86,16 @@ def music_port(request):
 
 
 @pytest.fixture
+def purchase_address(request):
+    return request.config.getoption('--purchase_address')
+
+
+@pytest.fixture
+def purchase_port(request):
+    return request.config.getoption('--purchase_port')
+
+
+@pytest.fixture
 def table_suffix(request):
     return request.config.getoption('--table_suffix')
 
@@ -91,6 +110,12 @@ def user_url(request, user_address, user_port):
 def music_url(request, music_address, music_port):
     return "http://{}:{}/api/v1/music/".format(
         music_address, music_port)
+
+
+@pytest.fixture
+def purchase_url(request, purchase_address, purchase_port):
+    return "http://{}:{}/api/v1/purchase/".format(
+        purchase_address, purchase_port)
 
 
 @pytest.fixture
@@ -160,7 +185,8 @@ def setup(args):
         args.access_key_id,
         args.secret_access_key,
         'Music-' + args.table_suffix,
-        'User-' + args.table_suffix
+        'User-' + args.table_suffix,
+        'Purchase-' + args.table_suffix,
     )
 
 
