@@ -5,6 +5,7 @@ Python  API for the purchase service.
 # Standard library modules
 
 # Installed packages
+from datetime import datetime
 import requests
 
 
@@ -18,7 +19,7 @@ class Purchase():
     ----------
     url: string
         The URL for accessing the purchase service. Often
-        'http://cmpt756s2:30010/'. Note the trailing slash.
+        'http://cmpt756s3:30010/'. Note the trailing slash.
     auth: string
         Authorization code to pass to the purchase service. For many
         implementations, the code is required but its content is
@@ -28,29 +29,33 @@ class Purchase():
         self._url = url
         self._auth = auth
 
-    # TODO change accordingly for create() api in purchase service
-    def create(self, artist, song, orig_artist=None):
+    def create(self, music_id, user_id, purchase_amount, timestamp=None):
         """Create an artist, song pair.
 
         Parameters
         ----------
-        artist: string
-            The artist performing song.
-        song: string
-            The name of the song.
-        orig_artist: string or None
-            The name of the original performer of this song.
+        music_id: string
+            The id of the music that was purchased
+        user_id: string
+            The id of the user who made the purchase
+        timestamp: string or None
+            The time of the purchase transaction
+        purchase_amount: integer
+            The price of the music purchased
 
         Returns
         -------
         (number, string)
             The number is the HTTP status code returned by Purchase.
-            The string is the UUID of this song in the purchase database.
+            The string is the UUID of this purchase transaction in the purchase database.
         """
-        payload = {'Artist': artist,
-                   'SongTitle': song}
-        if orig_artist is not None:
-            payload['OrigArtist'] = orig_artist
+        payload = {'music_id': music_id,
+                   'user_id': user_id,
+                   'purchase_amount': purchase_amount}
+        if timestamp is None:
+            payload['timestamp'] = datetime.now().isoformat()
+        else:
+            payload['timestamp'] = timestamp
         r = requests.post(
             self._url,
             json=payload,
@@ -143,20 +148,21 @@ class Purchase():
         return r.status_code, item['OrigArtist']
 
     # TODO change accordingly for delete_purchase() api in purchase service
-    def delete(self, m_id):
-        """Delete an artist, song pair.
+    def delete(self, p_id):
+        """Delete an transaction from the database.
 
         Parameters
         ----------
-        m_id: string
-            The UUID of this song in the purchase database.
+        p_id: string
+            The UUID of this purchase transaction in the purchase database.
 
         Returns
         -------
-        Does not return anything. The purchase delete operation
-        always returns 200, HTTP success.
+        trc: integer
+            The status code of the HTTP call
         """
-        requests.delete(
-            self._url + m_id,
+        r = requests.delete(
+            self._url + p_id,
             headers={'Authorization': self._auth}
         )
+        return r.status_code
