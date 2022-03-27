@@ -166,3 +166,25 @@ class Purchase():
             headers={'Authorization': self._auth}
         )
         return r.status_code
+
+    def update(self, p_id, purchase_amount):
+        """Update a transaction from the database.
+
+        Parameters
+        ----------
+        p_id: string
+            The UUID of this purchase transaction in the purchase database.
+        purchase_amount: int
+            Amount of the transaction
+
+        Returns
+        -------
+        trc: integer
+            The status code of the HTTP call
+        """
+        r = requests.put(
+            self._url + p_id,
+            json={'purchase_amount': purchase_amount},
+            headers={'Authorization': self._auth}
+        )
+        return r.status_code

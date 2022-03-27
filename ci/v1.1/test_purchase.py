@@ -40,6 +40,7 @@ def purchase_tx(request):
     music_id = '9e1f57a0-ae0d-11ec-b909-0242ac120002'
     user_id = '9e1f57a0-ae0d-11ec-b909-0242ac125742'
     purchase_amt = 25
+    update_purchase_amt = 30
     return (music_id, user_id, purchase_amt)
 
 
@@ -47,7 +48,8 @@ def test_get_purchase(pserv, purchase_tx):
     trc, p_id = pserv.create(purchase_tx[0], purchase_tx[1], purchase_tx[2])
     assert trc == 200
     trc, music_id, user_id, timestamp, purchase_amount = pserv.read(p_id)
-    assert (trc == 200 and timestamp == purchase_tx[0] and purchase_amount == purchase_tx[1])
+    assert (trc == 200 and music_id == purchase_tx[0] 
+        and user_id = purchase_tx[1] and purchase_amount == purchase_tx[2])
     pserv.delete(p_id)
     # No status to check
 
@@ -55,58 +57,17 @@ def test_delete_purchase(mserv, song, pserv: purchase.Purchase, purchase_tx):
     trc, p_id = pserv.create(purchase_tx[0], purchase_tx[1], purchase_tx[2])
     assert trc == 200
     trc, music_id, user_id, timestamp, purchase_amount = pserv.read(p_id)
-    assert (trc == 200 and timestamp == purchase_tx[0] and purchase_amount == purchase_tx[1])
+    assert (trc == 200 and music_id == purchase_tx[0] 
+        and user_id = purchase_tx[1] and purchase_amount == purchase_tx[2])
     trc = pserv.delete(p_id)
     assert trc == 200
 
-
-# @pytest.fixture
-# def song_oa(request):
-#     # Recorded 1967
-#     return ('Aretha Franklin', 'Respect')
-
-
-# @pytest.fixture
-# def m_id_oa(request, pserv, song_oa):
-#     trc, m_id = pserv.create(song_oa[0], song_oa[1])
-#     assert trc == 200
-#     yield m_id
-#     # Cleanup called after the test completes
-#     pserv.delete(m_id)
-
-
-# def test_orig_artist_oa(pserv, m_id_oa):
-#     # Original recording, 1965
-#     orig_artist = 'Otis Redding'
-#     trc = pserv.write_orig_artist(m_id_oa, orig_artist)
-#     assert trc == 200
-#     trc, oa = pserv.read_orig_artist(m_id_oa)
-#     assert trc == 200 and oa == orig_artist
-
-
-# def test_full_cycle(pserv):
-#     # `pserv` is an instance of the `Purchase` class
-
-#     # Performance at 2010 Vancouver Winter Olympics
-#     song = ('k. d. lang', 'Hallelujah')
-#     # Soundtrack of first Shrek film (2001)
-#     orig_artist = 'Rufus Wainwright'
-#     # Original recording from album "Various Positions" (1984)
-#     orig_orig_artist = 'Leonard Cohen'
-
-#     # Create a purchase record and save its id in the variable `m_id`
-#     # ... Fill in the test ...
-#     trc, m_id = pserv.create(song[0], song[1], orig_artist)
-#     assert trc == 200
-#     # trc, artist, title, oa = pserv.read(m_id)
-#     # assert (trc == 200 and artist == song[0] and title == song[1]
-#     #         and oa == orig_artist)
-
-#     trc = pserv.write_orig_artist(m_id, orig_orig_artist)
-#     assert trc == 200
-#     trc, artist, title, oa = pserv.read(m_id)
-#     assert (trc == 200 and artist == song[0] and title == song[1]
-#             and oa == orig_orig_artist)
-
-#     # The last statement of the test
-#     pserv.delete(m_id)
+def test_update_purchase(mserv, song, pserv: purchase.Purchase, purchase_tx):
+    trc, p_id = pserv.create(purchase_tx[0], purchase_tx[1], purchase_tx[2])
+    assert trc == 200
+    trc, p_id = pserv.update(p_id,purchase_tx[3])
+    assert trc == 200
+    trc, music_id, user_id, timestamp, purchase_amount = pserv.read(p_id)
+    assert (trc == 200 and music_id == purchase_tx[0] 
+        and user_id = purchase_tx[1] and purchase_amount == purchase_tx[3])
+    pserv.delete(p_id)
