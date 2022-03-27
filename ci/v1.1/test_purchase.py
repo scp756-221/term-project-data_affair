@@ -37,16 +37,14 @@ def pserv(request, purchase_url, auth):
 @pytest.fixture
 def purchase_tx(request):
     # Purchase amount $50
-    music_id = ''
-    user_id = ''
+    music_id = '9e1f57a0-ae0d-11ec-b909-0242ac120002'
+    user_id = '9e1f57a0-ae0d-11ec-b909-0242ac125742'
     purchase_amt = 25
     return (music_id, user_id, purchase_amt)
 
 
 def test_get_purchase(pserv, purchase_tx):
-    # Original recording, 1952
-    orig_artist = 'Big Mama Thornton'
-    trc, p_id = pserv.create('', '', purchase_tx[0], purchase_tx[1])
+    trc, p_id = pserv.create(purchase_tx[0], purchase_tx[1], purchase_tx[2])
     assert trc == 200
     trc, music_id, user_id, timestamp, purchase_amount = pserv.read(p_id)
     assert (trc == 200 and timestamp == purchase_tx[0] and purchase_amount == purchase_tx[1])
