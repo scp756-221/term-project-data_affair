@@ -19,7 +19,7 @@ class User():
     ----------
     url: string
         The URL for accessing the purchase service. Often
-        'http://cmpt756s3:30010/'. Note the trailing slash.
+        'http://cmpt756s1:30000/'. Note the trailing slash.
     auth: string
         Authorization code to pass to the purchase service. For many
         implementations, the code is required but its content is
