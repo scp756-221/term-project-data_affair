@@ -13,7 +13,21 @@ import pytest
 
 # Local modules
 import purchase
+import music
 
+@pytest.fixture
+def mserv(request, music_url, auth):
+    return music.Music(music_url, auth)
+
+
+@pytest.fixture
+def song(request):
+    # Recorded 2022
+    return ('Dharun Kumar', 'My Family')
+
+@pytest.fixture
+def user(request):
+    return ('Bangani', 'Hiren', 'hiren_naresh_bangani@sfu.ca')
 
 @pytest.fixture
 def pserv(request, purchase_url, auth):
@@ -21,9 +35,12 @@ def pserv(request, purchase_url, auth):
 
 
 @pytest.fixture
-def purchase(request):
+def purchase_tx(request):
     # Purchase amount $50
-    return ('2022-03-24 11:23:54', 50)
+    music_id = ''
+    user_id = ''
+    purchase_amt = 25
+    return (music_id, user_id, purchase_amt)
 
 
 def test_get_purchase(pserv, purchase_tx):
@@ -35,6 +52,14 @@ def test_get_purchase(pserv, purchase_tx):
     assert (trc == 200 and timestamp == purchase_tx[0] and purchase_amount == purchase_tx[1])
     pserv.delete(p_id)
     # No status to check
+
+def test_delete_purchase(mserv, song, pserv: purchase.Purchase, purchase_tx):
+    trc, p_id = pserv.create(purchase_tx[0], purchase_tx[1], purchase_tx[2])
+    assert trc == 200
+    trc, music_id, user_id, timestamp, purchase_amount = pserv.read(p_id)
+    assert (trc == 200 and timestamp == purchase_tx[0] and purchase_amount == purchase_tx[1])
+    trc = pserv.delete(p_id)
+    assert trc == 200
 
 
 # @pytest.fixture

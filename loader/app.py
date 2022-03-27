@@ -78,7 +78,7 @@ def create_purchase(user_id, music_id, purchase_amt, uuid):
         json={"objtype": "purchase",
               "user_id": user_id,
               "music_id": music_id,
-              "purchase_amt": purchase_amt,
+              "purchase_amount": purchase_amt,
               "timestamp": datetime.now().isoformat(),
               "uuid": uuid})
     return (response.json())
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     # Give Istio proxy time to initialize
     time.sleep(INITIAL_WAIT_SEC)
 
-    resource_dir = '/data'
+    resource_dir = 'data'
 
     db = {
         'name': parse_args() 
