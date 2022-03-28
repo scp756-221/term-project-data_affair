@@ -63,30 +63,6 @@ class Purchase():
         )
         return r.status_code, r.json()['purchase_id']
 
-    # TODO change accordingly for update_purchase() api in purchase service
-    def write_orig_artist(self, m_id, orig_artist):
-        """Write the original artist performing a song.
-
-        Parameters
-        ----------
-        m_id: string
-            The UUID of this song in the purchase database.
-
-        orig_artist: string
-            The original artist performing the song.
-
-        Returns
-        -------
-        number
-            The HTTP status code returned by the purchase service.
-        """
-        r = requests.put(
-            self._url + 'write_orig_artist/' + m_id,
-            json={'OrigArtist': orig_artist},
-            headers={'Authorization': self._auth}
-        )
-        return r.status_code
-
     def read(self, p_id):
         """Read details of a purchase.
 
@@ -118,38 +94,8 @@ class Purchase():
         item = r.json()['Items'][0]
         return r.status_code, item['music_id'], item['user_id'], item['timestamp'], item['purchase_amount']
 
-    # TODO change accordingly for get_purchase_by_user() api in purchase service
-    def read_orig_artist(self, m_id):
-        """Read the orginal artist of a song.
-
-        Parameters
-        ----------
-        m_id: string
-            The UUID of this song in the purchase database.
-
-        Returns
-        -------
-        status, orig_artist
-
-        status: number
-            The HTTP status code returned by Purchase.
-        orig_artist:
-          If status is 200, the original artist who
-            performed the song.
-          If status is not 200, None.
-        """
-        r = requests.get(
-            self._url + 'read_orig_artist/' + m_id,
-            headers={'Authorization': self._auth}
-            )
-        if r.status_code != 200:
-            return r.status_code, None
-        item = r.json()
-        return r.status_code, item['OrigArtist']
-
-    # TODO change accordingly for delete_purchase() api in purchase service
     def delete(self, p_id):
-        """Delete an transaction from the database.
+        """Delete an purchase transaction from the database.
 
         Parameters
         ----------
@@ -188,3 +134,32 @@ class Purchase():
             headers={'Authorization': self._auth}
         )
         return r.status_code
+
+    def get_purchase_by_user(self, u_id):
+        """Get all purchases of a user from the purchase database
+        
+        Parameters
+        ----------
+        u_id: string
+            The UUID of the user whose purchase is to be retrieved.
+            
+        Returns
+        -------
+        trc: integer
+            The status code of the HTTP call
+
+        u_purchases: json object
+            The response object containing the keys count - number of items and purchases - list of purchases
+        """
+
+        r = requests.put(
+            self._url + '/byuser/' + u_id,
+            headers={'Authorization': self._auth}
+        )
+
+        u_purchases = {
+            'count': r.json()['Count'],
+            'purchases': r.json()['Items']
+        }
+        
+        return r.status_code, u_purchases
