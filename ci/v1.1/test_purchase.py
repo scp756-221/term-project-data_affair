@@ -43,6 +43,12 @@ def purchase_tx(request):
     update_purchase_amt = 30
     return (music_id, user_id, purchase_amt, update_purchase_amt)
 
+def test_create_purchase(pserv, purchase_tx):
+    trc, p_id = pserv.create(purchase_tx[0], purchase_tx[1], purchase_tx[2])
+    assert trc == 200
+    yield p_id
+    # Cleanup called after the test completes
+    pserv.delete(p_id)
 
 def test_get_purchase(pserv, purchase_tx):
     trc, p_id = pserv.create(purchase_tx[0], purchase_tx[1], purchase_tx[2])
