@@ -63,17 +63,35 @@
             {
               "AttributeName": "purchase_id",
               "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "user_id",
+              "KeyType": "RANGE"
             }
           ],
-          "GlobalSecondaryIndexes": {
-            "IndexName": "user_id-index",
-            "KeySchema": [
-              {
-                "AttributeName": "user_id",
-                "KeyType": "HASH"
-              }
-            ]
-          },
+          "GlobalSecondaryIndexes": [ 
+            { 
+               "IndexName": "user_id-index",
+               "KeySchema": [ 
+                  {
+                    "AttributeName": "purchase_id",
+                    "KeyType": "HASH"
+                  },
+                  { 
+                     "AttributeName": "user_id",
+                     "KeyType": "RANGE"
+                  }
+               ],
+               "Projection": { 
+                  "NonKeyAttributes": [ "purchase_id", "user_id" ],
+                  "ProjectionType": "INCLUDE"
+               },
+               "ProvisionedThroughput": { 
+                  "ReadCapacityUnits": 5,
+                  "WriteCapacityUnits": 5
+               }
+            }
+         ],
           "ProvisionedThroughput": {
             "ReadCapacityUnits": "5",
             "WriteCapacityUnits": "5"
