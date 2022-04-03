@@ -79,7 +79,7 @@ def create_purchase(user_id, music_id, purchase_amt, uuid):
               "user_id": user_id,
               "music_id": music_id,
               "purchase_amount": purchase_amt,
-              "timestamp": datetime.now().isoformat(),
+              "time_stamp": datetime.now().isoformat(),
               "uuid": uuid})
     return (response.json())
 
