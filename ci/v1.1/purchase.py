@@ -53,9 +53,9 @@ class Purchase():
                    'user_id': user_id,
                    'purchase_amount': purchase_amount}
         if timestamp is None:
-            payload['timestamp'] = datetime.now().isoformat()
+            payload['time_stamp'] = datetime.now().isoformat()
         else:
-            payload['timestamp'] = timestamp
+            payload['time_stamp'] = timestamp
         r = requests.post(
             self._url,
             json=payload,
@@ -92,7 +92,7 @@ class Purchase():
             return r.status_code, None, None, None, None
 
         item = r.json()['Items'][0]
-        return r.status_code, item['music_id'], item['user_id'], item['timestamp'], item['purchase_amount']
+        return r.status_code, item['music_id'], item['user_id'], item['time_stamp'], item['purchase_amount']
 
     def delete(self, p_id):
         """Delete an purchase transaction from the database.

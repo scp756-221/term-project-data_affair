@@ -64,14 +64,14 @@ def readiness():
 
 
 
-@bp.route('/<purchase_id>', methods=['PUT'])
-def update_purchase(purchase_id):
+@bp.route('/', methods=['PUT'])
+def update_purchase():
     """
     Summary line:
         Updates the purchases table, whenever an exchange is carried out
   
     Parameters:
-        purchase_id : Original purchase id is the incoming parameter
+        Null
   
     Returns:
         The response for updated purchase.
@@ -88,7 +88,7 @@ def update_purchase(purchase_id):
         purchase_id = content['purchase_id']
         music_id = content['music_id']
         user_id = content['user_id']
-        timestamp = content['timestamp']
+        timestamp = datetime.now().isoformat()
         purchase_amount = content['purchase_amount']
     except Exception:
         return json.dumps({"message": "error reading arguments"})
@@ -97,7 +97,7 @@ def update_purchase(purchase_id):
         url,
         params={"objtype": "purchase", "objkey": purchase_id},
         json={"purchase_id": purchase_id, "music_id": music_id,
-              "user_id": user_id, "timestamp":timestamp, "purchase_amount": purchase_amount },
+              "user_id": user_id, "time_stamp":timestamp, "purchase_amount": purchase_amount },
         headers={'Authorization': headers['Authorization']})
     return (response.json())
 
@@ -123,7 +123,7 @@ def create_purchase():
         content = request.get_json()
         music_id = content['music_id']
         user_id = content['user_id']
-        timestamp = content['timestamp']
+        timestamp = datetime.now().isoformat()
         purchase_amount = content['purchase_amount']
     except Exception:
         return json.dumps({"message": "error reading arguments"})
@@ -133,7 +133,7 @@ def create_purchase():
         json={"objtype": "purchase",
               "music_id": music_id,
               "user_id": user_id,
-              "timestamp": timestamp,
+              "time_stamp": timestamp,
               "purchase_amount": purchase_amount
             })
     return (response.json())
