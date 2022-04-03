@@ -97,7 +97,7 @@ def update_purchase():
     response = requests.put(
         url,
         params={"objtype": "purchase", "objkey": purchase_id},
-        json={"purchase_id": purchase_id, "music_id": music_id,
+        json={"music_id": music_id,
               "user_id": user_id, "time_stamp":timestamp, "purchase_amount": purchase_amount },
         headers={'Authorization': headers['Authorization']})
     return (response.json())
