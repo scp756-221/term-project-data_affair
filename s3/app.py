@@ -7,6 +7,7 @@ Sample application---purchase service.
 import logging
 import sys
 import time
+from datetime import datetime
 
 # Installed packages
 from flask import Blueprint
