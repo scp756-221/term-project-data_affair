@@ -54,6 +54,26 @@ object RUser {
 
 }
 
+object Purchase {
+  val feeder = csv("purchases.csv").eager.circular
+  val rpurchases = forever("i") {
+    feed(feeder)
+    .exec(http("Write purchase")
+      .post("/api/v1/purchase")
+      .header("Content-Type" , "application/json")
+      .body(StringBody(string = """{
+        "transaction_id": "#{transaction_id}",
+        "user_id": "#{user_id}",
+        "music_id": "#{music_id}",
+        "purchase_amount": "#{purchase_amount}"}
+        """ )))
+    .pause(1)
+    .exec(http("Read purchase")
+      .get("/api/v1/purchase/{}"))
+    .pause(1)
+  }
+}
+
 /*
   After one S1 read, pause a random time between 1 and 60 s
 */
@@ -114,6 +134,15 @@ class ReadTablesSim extends Simulation {
     .acceptHeader("application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .authorizationHeader("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZGJmYmMxYzAtMDc4My00ZWQ3LTlkNzgtMDhhYTRhMGNkYTAyIiwidGltZSI6MTYwNzM2NTU0NC42NzIwNTIxfQ.zL4i58j62q8mGUo5a0SQ7MHfukBUel8yl8jGT5XmBPo")
     .acceptLanguageHeader("en-US,en;q=0.5")
+}
+
+class PurchaseSim extends ReadTablesSim {
+  val scnPurchase = scenario("Purchases")
+      .exec(Purchase.rpurchases)
+    
+  setUp(
+    scnPurchase.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))
+  ).protocols(httpProtocol)
 }
 
 class ReadUserSim extends ReadTablesSim {
