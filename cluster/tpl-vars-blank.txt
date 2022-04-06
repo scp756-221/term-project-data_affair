@@ -9,6 +9,8 @@ ZZ-CR-ID=ghcr.io
 # As we are using GitHub's container registry, this is your GitHub username (lowercase)
 #
 ZZ-REG-ID=
+# Team name for image tagging in the organisation repo
+ZZ-TEAM=
 #
 # us-west-2 is the AWS region closest to Vancouver and therefore
 # will have the lowest geolatency.
