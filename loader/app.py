@@ -126,7 +126,7 @@ if __name__ == '__main__':
     # Give Istio proxy time to initialize
     time.sleep(INITIAL_WAIT_SEC)
 
-    resource_dir = 'data'
+    resource_dir = '/data'
 
     db = {
         'name': parse_args() 
@@ -160,7 +160,7 @@ if __name__ == '__main__':
                                                              title,
                                                              uuid))
 
-    with open('{}/purchase/purchase.csv'.format(resource_dir), 'r') as inp:
+    with open('{}/purchases/purchases.csv'.format(resource_dir), 'r') as inp:
         rdr = csv.reader(inp)
         next(rdr)  # Skip header
         for uuid, user_id, music_id, purchase_amt in rdr:
