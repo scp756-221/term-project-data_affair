@@ -96,6 +96,64 @@ object Purchase {
   }
 }
 
+object UserFlowLoad {
+  val feeder = csv("load.csv").eager.circular
+  val ruserflow = forever("i") {
+    feed(feeder)
+    .exec(http("Write Music ${i}")
+      .post("/api/v1/music")
+      .header("Content-Type" , "application/json")
+      .body(StringBody(string = """{
+          "Artist": "${Artist}",
+          "SongTitle": "${SongTitle}"
+        }""" ))
+      .check(status.is(200))
+      .check(jsonPath("$..music_id").ofType[String].saveAs("music_id")))
+    .pause(1)
+    .exec(http("Write User ${i}")
+      .post("/api/v1/user")
+      .header("Content-Type" , "application/json")
+      .body(StringBody(string = """{
+          "fname": "${fname}",
+          "lname": "${lname}",
+          "email": "${email}"
+        }""" ))
+    .check(status.is(200))
+    .check(jsonPath("$..user_id").ofType[String].saveAs("user_id")))
+    .pause(1)
+    .exec(http("Read music ${i}")
+      .get("/api/v1/music/${music_id}")
+      .check(status.is(200))
+      .check(jsonPath("$..SongTitle").is("${SongTitle}")))
+    .pause(1)
+    .exec(http("Read user ${i}")
+      .get("/api/v1/user/${user_id}")
+      .check(status.is(200))
+      .check(jsonPath("$..email").is("${email}")))
+    .pause(1)
+    .exec(http("Write purchase ${i}")
+      .post("/api/v1/purchase")
+      .header("Content-Type" , "application/json")
+      .body(StringBody(string = """{
+          "user_id": "${user_id}",
+          "music_id": "${music_id}",
+          "purchase_amount": "${purchase_amount}"}
+        """ ))
+    .check(status.is(200))
+    .check(jsonPath("$..purchase_id").ofType[String].saveAs("purchase_id")))
+    .pause(1)
+    .exec(http("Read purchase ${i}")
+      .get("/api/v1/purchase/${purchase_id}")
+      .check(status.is(200))
+      .check(jsonPath("$..user_id").is("${user_id}")))
+    .pause(1)
+    .exec(http("Get by user ${i}")
+      .get("/api/v1/purchase/byuser/${user_id}")
+      .check(status.is(200)))
+    .pause(1)
+  }
+}
+
 /*
   After one S1 read, pause a random time between 1 and 60 s
 */
@@ -152,7 +210,7 @@ object RBoth {
 // Get Cluster IP from CLUSTER_IP environment variable or default to 127.0.0.1 (Minikube)
 class ReadTablesSim extends Simulation {
   val httpProtocol = http
-    .baseUrl("http://34.83.42.29/")
+    .baseUrl("http://" + Utility.envVar("CLUSTER_IP", "127.0.0.1") + "/")
     .acceptHeader("application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .authorizationHeader("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZGJmYmMxYzAtMDc4My00ZWQ3LTlkNzgtMDhhYTRhMGNkYTAyIiwidGltZSI6MTYwNzM2NTU0NC42NzIwNTIxfQ.zL4i58j62q8mGUo5a0SQ7MHfukBUel8yl8jGT5XmBPo")
     .acceptLanguageHeader("en-US,en;q=0.5")
@@ -164,6 +222,15 @@ class PurchaseSim extends ReadTablesSim {
     
   setUp(
     scnPurchase.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))
+  ).protocols(httpProtocol)
+}
+
+class UserFlowSim extends ReadTablesSim {
+  val scnUserFlow = scenario("User Flow")
+      .exec(UserFlowLoad.ruserflow)
+    
+  setUp(
+    scnUserFlow.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))
   ).protocols(httpProtocol)
 }
 
