@@ -76,7 +76,7 @@ spec:
       serviceAccountName: svc-db
       containers:
       - name: cmpt756db
-        image: 'ZZ-CR-ID/ZZ-REG-ID/cmpt756db:v1'
+        image: 'ZZ-CR-ID/ZZ-REG-ID/ZZ-TEAM-cmpt756db:v1'
         imagePullPolicy: Always
         env:
         - name: SVC_LOADER_TOKEN

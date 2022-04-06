@@ -62,7 +62,7 @@ spec:
       serviceAccountName: svc-s2
       containers:
       - name: service2
-        image: 'ZZ-CR-ID/ZZ-REG-ID/cmpt756s2:latest'
+        image: 'ZZ-CR-ID/ZZ-REG-ID/ZZ-TEAM-cmpt756s2:latest'
         imagePullPolicy: Always
         ports:
         - containerPort: 30001

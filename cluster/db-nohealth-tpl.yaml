@@ -59,7 +59,7 @@ spec:
       serviceAccountName: svc-db
       containers:
       - name: cmpt756db
-        image: 'ZZ-CR-ID/ZZ-REG-ID/cmpt756db:latest'
+        image: 'ZZ-CR-ID/ZZ-REG-ID/ZZ-TEAM-cmpt756db:latest'
         imagePullPolicy: Always
         envFrom:
         - secretRef:
