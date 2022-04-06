@@ -6,7 +6,7 @@
 #
 set -o nounset
 set -o errexit
-if [[ $# -ne 6 ]]
+if [[ $# -ne 7 ]]
 then
   echo "call-sed.sh must have six arguments"
   exit 1
@@ -20,7 +20,7 @@ out=${1/-tpl/}
 # The official AWS docs (https://docs.aws.amazon.com/IAM/latest/APIReference/API_AccessKey.html) state that Access Key IDs are pure alphanumeric.
 # They do not restrict the Secret Access Key in any way but various sites on the Web suggest that it is only alphanumeric+slash+plus
 # So it should be delimitable by '|'
-sed -e "s|ZZ-CR-ID|${2}|g" -e "s|ZZ-REG-ID|${3}|g" -e "s|ZZ-AWS-REGION|${4}|g" -e "s|ZZ-AWS-ACCESS-KEY-ID|${5}|g" -e "s|ZZ-AWS-SECRET-ACCESS-KEY|${6}|g" ${1} > ${out}
+sed -e "s|ZZ-CR-ID|${2}|g" -e "s|ZZ-REG-ID|${3}|g" -e "s|ZZ-TEAM|${4}|g" -e "s|ZZ-AWS-REGION|${5}|g" -e "s|ZZ-AWS-ACCESS-KEY-ID|${6}|g" -e "s|ZZ-AWS-SECRET-ACCESS-KEY|${7}|g" ${1} > ${out}
 # If source file is executable, output should be, too.
 # BUT in a container, `test -x` doesn't work correctly some times, such
 # as when Host OS is macOS. So use this clumsy alternative, which works (sigh)
