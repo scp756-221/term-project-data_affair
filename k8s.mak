@@ -332,7 +332,7 @@ $(LOG_DIR)/s2-$(S2_VER).repo.log: s2/$(S2_VER)/Dockerfile s2/$(S2_VER)/app.py s2
 	$(DK) push $(CREG)/$(REGID)/$(TEAM)-cmpt756s2:$(S2_VER) | tee $(LOG_DIR)/s2-$(S2_VER).repo.log
 
 # Build the s3 service
-$(LOG_DIR)/s3-$(S3_VER).repo.log: s3/$(S3_VER)/Dockerfile s3/$(S3_VER)/app.py s3/requirements.txt
+$(LOG_DIR)/s3-$(S3_VER).repo.log: s3/$(S3_VER)/Dockerfile s3/$(S3_VER)/app.py s3/$(S3_VER)/requirements.txt
 	make -f k8s.mak --no-print-directory registry-login
 	$(DK) build $(ARCH) -t $(CREG)/$(REGID)/$(TEAM)-cmpt756s3:$(S3_VER) s3/$(S3_VER) | tee $(LOG_DIR)/s3-$(S3_VER).img.log
 	$(DK) push $(CREG)/$(REGID)/$(TEAM)-cmpt756s3:$(S3_VER) | tee $(LOG_DIR)/s3-$(S3_VER).repo.log
