@@ -35,7 +35,7 @@ spec:
       serviceAccountName: svc-s2
       containers:
       - name: cmpt756s2
-        image: 'ZZ-CR-ID/ZZ-REG-ID/cmpt756s2:v1'
+        image: 'ZZ-CR-ID/ZZ-REG-ID/ZZ-TEAM-cmpt756s2:v1'
         imagePullPolicy: Always
         env:
           - name: EXER
