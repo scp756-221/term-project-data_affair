@@ -19,7 +19,7 @@ spec:
       containers:
       - name: loader
         imagePullPolicy: Always
-        image: 'ZZ-CR-ID/ZZ-REG-ID/cmpt756loader:v1'
+        image: 'ZZ-CR-ID/ZZ-REG-ID/ZZ-TEAM-cmpt756loader:v1'
         env:
         - name: SVC_LOADER_TOKEN
           valueFrom:
