@@ -54,7 +54,7 @@ object RUser {
 
 }
 
-object Purchase {
+object PurchaseCoverage {
   val feeder = csv("purchases.csv").eager.circular
   val rpurchases = forever("i") {
     feed(feeder)
@@ -118,13 +118,21 @@ object UserFlowLoad {
           "lname": "${lname}",
           "email": "${email}"
         }""" ))
-    .check(status.is(200))
-    .check(jsonPath("$..user_id").ofType[String].saveAs("user_id")))
+      .check(status.is(200))
+      .check(jsonPath("$..user_id").ofType[String].saveAs("user_id")))
     .pause(1)
     .exec(http("Read music ${i}")
       .get("/api/v1/music/${music_id}")
       .check(status.is(200))
       .check(jsonPath("$..SongTitle").is("${SongTitle}")))
+    .pause(1)
+    .exec(http("User Login to Purchase ${i}")
+      .put("/api/v1/user/login")
+      .header("Content-Type", "application/json")
+      .body(StringBody(string = """{
+          "uid": "${user_id}"
+      }"""))
+      .check(status.is(200)))
     .pause(1)
     .exec(http("Read user ${i}")
       .get("/api/v1/user/${user_id}")
@@ -147,7 +155,7 @@ object UserFlowLoad {
       .check(status.is(200))
       .check(jsonPath("$..user_id").is("${user_id}")))
     .pause(1)
-    .exec(http("Get by user ${i}")
+    .exec(http("Get purchase by user ${i}")
       .get("/api/v1/purchase/byuser/${user_id}")
       .check(status.is(200)))
     .pause(1)
@@ -216,9 +224,9 @@ class ReadTablesSim extends Simulation {
     .acceptLanguageHeader("en-US,en;q=0.5")
 }
 
-class PurchaseSim extends ReadTablesSim {
-  val scnPurchase = scenario("Purchases")
-      .exec(Purchase.rpurchases)
+class PurchaseCoverageSim extends ReadTablesSim {
+  val scnPurchase = scenario("Purchases Coverage")
+      .exec(PurchaseCoverage.rpurchases)
     
   setUp(
     scnPurchase.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))

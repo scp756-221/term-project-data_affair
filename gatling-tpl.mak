@@ -5,8 +5,7 @@ CREG=ZZ-CR-ID
 GATLING_VER=3.4.2
 IMAGE_NAME=$(CREG)/scp-2021-jan-cmpt-756/gatling:$(GATLING_VER)
 
-DIR=./gatling
-
+DIR=.
 # Convert relative pathname to absolute
 ABS_DIR=$(realpath $(DIR))
 
@@ -29,4 +28,13 @@ run:
 		-e SIM_NAME=${SIM_NAME} \
 		--label gatling \
 		${IMAGE_NAME} \
-		-s ${SIM_FULL_NAME}
+		-s ${SIM_FULL_NAME} > gatling-tmp.log
+
+	@echo "Control-C to end output when you have seen enough."
+	@echo "To stop the Gatling job, enter"
+	@echo "   $ kill tools/gatling.sh $!"
+	@echo "The Gatling job will continue running until it is stopped or"
+	@echo "the container is exited."
+
+	docker container logs `cat gatling-tmp.log` --follow
+
