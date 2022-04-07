@@ -5,7 +5,6 @@ Python  API for the purchase service.
 # Standard library modules
 
 # Installed packages
-from datetime import datetime
 import requests
 
 
