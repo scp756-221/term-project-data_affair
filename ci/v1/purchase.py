@@ -156,7 +156,7 @@ class Purchase():
             purchases - list of purchases
         """
 
-        r = requests.put(
+        r = requests.get(
             self._url + '/byuser/' + u_id,
             headers={'Authorization': self._auth}
         )
