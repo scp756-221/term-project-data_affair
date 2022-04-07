@@ -20,4 +20,17 @@ aws dynamodb create-table \
   --attribute-definitions '[{ "AttributeName": "user_id", "AttributeType": "S" }]' \
   --key-schema '[{ "AttributeName": "user_id", "KeyType": "HASH" }]' \
   --provisioned-throughput '{"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}'
+aws dynamodb create-table \
+  --endpoint-url http://0.0.0.0:8000 \
+  --region us-west-2 \
+  --table-name User-ZZ-REG-ID \
+  --attribute-definitions '[{ "AttributeName": "purchase_id", "AttributeType": "S" }]' \
+  --key-schema '[{ "AttributeName": "purchase_id", "KeyType": "HASH" }]' \
+  --provisioned-throughput '{"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}'
+aws dynamodb update-table \
+    --table-name User-ZZ-REG-ID \
+    --attribute-definitions '[{ "AttributeName": "user_id", "AttributeType": "S" }]' \
+    --global-secondary-index-updates \
+        "[{\"Create\":{\"IndexName\": \"user_id-index\",\"KeySchema\":[{\"AttributeName\":\"user_id\",\"KeyType\":\"HASH\"}], \
+        \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5      },\"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 
