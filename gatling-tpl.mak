@@ -24,7 +24,7 @@ run:
 		-v ${ABS_DIR}/gatling:/opt/gatling/user-files \
 		-v ${ABS_DIR}/gatling/target:/opt/gatling/target \
 		-e CLUSTER_IP=${CLUSTER_IP} \
-		-e USERS=${USER} \
+		-e USERS=${USERS} \
 		-e SIM_NAME=${SIM_NAME} \
 		--label gatling \
 		${IMAGE_NAME} \

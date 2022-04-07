@@ -27,11 +27,12 @@ GCP_CTX=gcp756
 SUBNET_NAME=c756subnet
 
 # Small machines to stay in free tier
-MACHINE_TYPE="g1-small"
+MACHINE_TYPE="e2-medium"
 IMAGE_TYPE="COS"
 DISK_TYPE="pd-standard"
 DISK_SIZE="32"
-NUM_NODES=3 # This was default for Google's "My First Cluster"
+NUM_NODES=2 # This was default for Google's "My First Cluster"
+NGROUP=default-pool
 # The CMPT 756 stack will run with 2 `g1-small` nodes but has almost
 # no memory to spare
 #NUM_NODES=2
@@ -76,8 +77,8 @@ stop:
 	$(KC) config delete-context $(GCP_CTX) | tee -a $(LOG_DIR)/gcp-stop.log
 
 up:
-	@echo "NOT YET IMPLEMENTED"
-	exit 1
+	$(GC) container node-pools create ${NGROUP} --cluster ${CLUSTER_NAME} --zone ${ZONE} --machine-type ${MACHINE_TYPE} --num-nodes 2 --min-nodes 2 --max-nodes 2 \
+	--enable-autoprovisioning --enable-autoscaling | tee $(LOG_DIR)/gcp-up.log
 
 down:
 	@echo "NOT YET IMPLEMENTED"
