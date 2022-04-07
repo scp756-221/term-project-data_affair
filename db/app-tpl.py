@@ -104,6 +104,7 @@ def read():
                            KeyConditionExpression=Key(table_id).eq(objkey))
     return response
 
+
 @bp.route('/fetch', methods=['GET'])
 def fetch():
     headers = request.headers  # noqa: F841
