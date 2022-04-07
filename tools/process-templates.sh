@@ -17,7 +17,7 @@ check_command 'istioctl'
 check_command 'helm'
 check_command 'curl'
 # AWS command is required for all vendors, to control DynamoDB
-check_command 'aws'
+check_command 'gcloud'
 #
 # Step 0: Check that the input file exists
 #
