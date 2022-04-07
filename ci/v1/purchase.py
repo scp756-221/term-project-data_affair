@@ -115,7 +115,7 @@ class Purchase():
         )
         return r.status_code
 
-    def update(self, p_id, purchase_amount):
+    def update(self, p_id, purchase_amount, user_id, music_id):
         """Update a transaction from the database.
 
         Parameters
@@ -131,8 +131,9 @@ class Purchase():
             The status code of the HTTP call
         """
         r = requests.put(
-            self._url + p_id,
-            json={'purchase_amount': purchase_amount},
+            self._url,
+            json={'purchase_id': p_id, 'purchase_amount': purchase_amount,
+                  "user_id": user_id, "music_id": music_id},
             headers={'Authorization': self._auth}
         )
         return r.status_code

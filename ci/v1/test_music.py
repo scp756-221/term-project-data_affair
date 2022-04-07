@@ -28,11 +28,24 @@ def song(request):
 
 def test_simple_run(mserv, song):
     # Original recording, 1952
-    orig_artist = 'Big Mama Thornton'
-    trc, m_id = mserv.create(song[0], song[1], orig_artist)
+    trc, m_id = mserv.create(song[0], song[1])
     assert trc == 200
     trc, artist, title, oa = mserv.read(m_id)
-    assert (trc == 200 and artist == song[0] and title == song[1]
-            and oa == orig_artist)
+    assert (trc == 200 and artist == song[0] and title == song[1])
     mserv.delete(m_id)
     # No status to check
+
+
+@pytest.fixture
+def song_oa(request):
+    # Recorded 1967
+    return ('Aretha Franklin', 'Respect')
+
+
+@pytest.fixture
+def m_id_oa(request, mserv, song_oa):
+    trc, m_id = mserv.create(song_oa[0], song_oa[1])
+    assert trc == 200
+    yield m_id
+    # Cleanup called after the test completes
+    mserv.delete(m_id)
