@@ -105,7 +105,8 @@ class Music():
         Does not return anything. The music delete operation
         always returns 200, HTTP success.
         """
-        requests.delete(
+        r = requests.delete(
             self._url + m_id,
             headers={'Authorization': self._auth}
         )
+        return r.status_code
