@@ -47,7 +47,8 @@ class Purchase():
         -------
         (number, string)
             The number is the HTTP status code returned by Purchase.
-            The string is the UUID of this purchase transaction in the purchase database.
+            The string is the UUID of this purchase transaction in the
+            purchase database.
         """
         payload = {'music_id': music_id,
                    'user_id': user_id,
@@ -92,7 +93,8 @@ class Purchase():
             return r.status_code, None, None, None, None
 
         item = r.json()['Items'][0]
-        return r.status_code, item['music_id'], item['user_id'], item['time_stamp'], item['purchase_amount']
+        return r.status_code, item['music_id'], item['user_id'], \
+            item['time_stamp'], item['purchase_amount']
 
     def delete(self, p_id):
         """Delete an purchase transaction from the database.
@@ -137,19 +139,20 @@ class Purchase():
 
     def get_purchase_by_user(self, u_id):
         """Get all purchases of a user from the purchase database
-        
+
         Parameters
         ----------
         u_id: string
             The UUID of the user whose purchase is to be retrieved.
-            
+
         Returns
         -------
         trc: integer
             The status code of the HTTP call
 
         u_purchases: json object
-            The response object containing the keys count - number of items and purchases - list of purchases
+            The response object containing the keys count - number of items and
+            purchases - list of purchases
         """
 
         r = requests.put(
@@ -161,5 +164,5 @@ class Purchase():
             'count': r.json()['Count'],
             'purchases': r.json()['Items']
         }
-        
+
         return r.status_code, u_purchases
