@@ -56,9 +56,9 @@ object RUser {
 
 object PurchaseCoverage {
   val feeder = csv("purchases.csv").eager.circular
-  val rpurchases = forever("i") {
+  val rpurchases = {
     feed(feeder)
-    .exec(http("Write purchase ${i}")
+    .exec(http("Write purchase")
       .post("/api/v1/purchase")
       .header("Content-Type" , "application/json")
       .body(StringBody(string = """{
@@ -66,15 +66,15 @@ object PurchaseCoverage {
         "music_id": "${music_id}",
         "purchase_amount": "${purchase_amount}"}
         """ ))
-    .check(status.is(200))
-    .check(jsonPath("$..purchase_id").ofType[String].saveAs("purchase_id")))
+      .check(status.is(200))
+      .check(jsonPath("$..purchase_id").ofType[String].saveAs("purchase_id")))
     .pause(1)
-    .exec(http("Read purchase ${i}")
+    .exec(http("Read purchase")
       .get("/api/v1/purchase/${purchase_id}")
       .check(status.is(200))
       .check(jsonPath("$..user_id").is("${user_id}")))
     .pause(1)
-    .exec(http("Update purchase ${i}")
+    .exec(http("Update purchase")
       .put("/api/v1/purchase")
       .header("Content-Type", "application/json")
       .body(StringBody(string = """
@@ -85,11 +85,11 @@ object PurchaseCoverage {
       """))
       .check(status.is(200)))
     .pause(1)
-    .exec(http("Get by user ${i}")
+    .exec(http("Get Purchase by user")
       .get("/api/v1/purchase/byuser/${user_id}")
       .check(status.is(200)))
     .pause(1)
-    .exec(http("Delete purchase ${i}")
+    .exec(http("Delete purchase")
       .delete("/api/v1/purchase/${purchase_id}")
       .check(status.is(200)))
     .pause(1)
@@ -98,9 +98,9 @@ object PurchaseCoverage {
 
 object UserFlowLoad {
   val feeder = csv("load.csv").eager.circular
-  val ruserflow = forever("i") {
+  val ruserflow = {
     feed(feeder)
-    .exec(http("Write Music ${i}")
+    .exec(http("Write Music")
       .post("/api/v1/music")
       .header("Content-Type" , "application/json")
       .body(StringBody(string = """{
@@ -110,7 +110,7 @@ object UserFlowLoad {
       .check(status.is(200))
       .check(jsonPath("$..music_id").ofType[String].saveAs("music_id")))
     .pause(1)
-    .exec(http("Write User ${i}")
+    .exec(http("Write User")
       .post("/api/v1/user")
       .header("Content-Type" , "application/json")
       .body(StringBody(string = """{
@@ -121,12 +121,12 @@ object UserFlowLoad {
       .check(status.is(200))
       .check(jsonPath("$..user_id").ofType[String].saveAs("user_id")))
     .pause(1)
-    .exec(http("Read music ${i}")
+    .exec(http("Read music")
       .get("/api/v1/music/${music_id}")
       .check(status.is(200))
       .check(jsonPath("$..SongTitle").is("${SongTitle}")))
     .pause(1)
-    .exec(http("User Login to Purchase ${i}")
+    .exec(http("User Login to Purchase")
       .put("/api/v1/user/login")
       .header("Content-Type", "application/json")
       .body(StringBody(string = """{
@@ -134,12 +134,12 @@ object UserFlowLoad {
       }"""))
       .check(status.is(200)))
     .pause(1)
-    .exec(http("Read user ${i}")
+    .exec(http("Read user")
       .get("/api/v1/user/${user_id}")
       .check(status.is(200))
       .check(jsonPath("$..email").is("${email}")))
     .pause(1)
-    .exec(http("Write purchase ${i}")
+    .exec(http("Write purchase")
       .post("/api/v1/purchase")
       .header("Content-Type" , "application/json")
       .body(StringBody(string = """{
@@ -147,15 +147,15 @@ object UserFlowLoad {
           "music_id": "${music_id}",
           "purchase_amount": "${purchase_amount}"}
         """ ))
-    .check(status.is(200))
-    .check(jsonPath("$..purchase_id").ofType[String].saveAs("purchase_id")))
+      .check(status.is(200))
+      .check(jsonPath("$..purchase_id").ofType[String].saveAs("purchase_id")))
     .pause(1)
-    .exec(http("Read purchase ${i}")
+    .exec(http("Read purchase")
       .get("/api/v1/purchase/${purchase_id}")
       .check(status.is(200))
       .check(jsonPath("$..user_id").is("${user_id}")))
     .pause(1)
-    .exec(http("Get purchase by user ${i}")
+    .exec(http("Get purchase by user")
       .get("/api/v1/purchase/byuser/${user_id}")
       .check(status.is(200)))
     .pause(1)
@@ -224,7 +224,16 @@ class ReadTablesSim extends Simulation {
     .acceptLanguageHeader("en-US,en;q=0.5")
 }
 
-class PurchaseCoverageSim extends ReadTablesSim {
+class PurchaseCoverageClosedSim extends ReadTablesSim {
+  val scnPurchase = scenario("Purchases Coverage")
+      .exec(PurchaseCoverage.rpurchases)
+    
+  setUp(
+    scnPurchase.inject(constantConcurrentUsers(Utility.envVarToInt("USERS", 1)).during(15.minutes))
+  ).protocols(httpProtocol)
+}
+
+class PurchaseCoverageOpenSim extends ReadTablesSim {
   val scnPurchase = scenario("Purchases Coverage")
       .exec(PurchaseCoverage.rpurchases)
     
@@ -233,12 +242,21 @@ class PurchaseCoverageSim extends ReadTablesSim {
   ).protocols(httpProtocol)
 }
 
-class UserFlowSim extends ReadTablesSim {
+class UserFlowClosedSim extends ReadTablesSim {
+  val scnUserFlow = scenario("User Flow")
+      .exec(UserFlowLoad.ruserflow)
+  val users = Utility.envVarToInt("USERS", 1)
+  setUp(
+    scnUserFlow.inject(rampConcurrentUsers(1).to(users).during(10 * users))
+  ).protocols(httpProtocol)
+}
+
+class UserFlowOpenSim extends ReadTablesSim {
   val scnUserFlow = scenario("User Flow")
       .exec(UserFlowLoad.ruserflow)
     
   setUp(
-    scnUserFlow.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))
+    scnUserFlow.inject(constantUsersPerSec(Utility.envVarToInt("USERS", 1)).during(15.minutes))
   ).protocols(httpProtocol)
 }
 
