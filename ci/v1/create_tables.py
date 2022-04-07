@@ -80,8 +80,7 @@ def create_tables(url, region, access_key_id,
         AttributeDefinitions=[{
             "AttributeName": "purchase_id", "AttributeType": "S"}],
         KeySchema=[{"AttributeName": "purchase_id", "KeyType": "HASH"}],
-        GlobalSecondaryIndexes=[
-        {
+        GlobalSecondaryIndexes=[{
             'IndexName': 'user_id-index',
             'KeySchema': [
                 {
