@@ -242,12 +242,21 @@ class PurchaseCoverageOpenSim extends ReadTablesSim {
   ).protocols(httpProtocol)
 }
 
-class UserFlowClosedSim extends ReadTablesSim {
+class UserRampFlowClosedSim extends ReadTablesSim {
   val scnUserFlow = scenario("User Flow")
       .exec(UserFlowLoad.ruserflow)
   val users = Utility.envVarToInt("USERS", 1)
   setUp(
     scnUserFlow.inject(rampConcurrentUsers(1).to(users).during(10 * users))
+  ).protocols(httpProtocol)
+}
+
+class UserConcurrentFlowClosedSim extends ReadTablesSim {
+  val scnUserFlow = scenario("User Flow")
+      .exec(UserFlowLoad.ruserflow)
+  val users = Utility.envVarToInt("USERS", 1)
+  setUp(
+    scnUserFlow.inject(constantConcurrentUsers(users).during(15.minutes))
   ).protocols(httpProtocol)
 }
 
