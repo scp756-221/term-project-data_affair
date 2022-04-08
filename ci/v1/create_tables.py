@@ -80,6 +80,22 @@ def create_tables(url, region, access_key_id,
         AttributeDefinitions=[{
             "AttributeName": "purchase_id", "AttributeType": "S"}],
         KeySchema=[{"AttributeName": "purchase_id", "KeyType": "HASH"}],
+        GlobalSecondaryIndexes=[{
+            'IndexName': 'user_id-index',
+            'KeySchema': [
+                {
+                    'AttributeName': 'user_id',
+                    'KeyType': 'HASH'
+                },
+            ],
+            'Projection': {
+                'ProjectionType': 'ALL'
+            },
+            'ProvisionedThroughput': {
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            }
+        }],
         ProvisionedThroughput={
             "ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
     )

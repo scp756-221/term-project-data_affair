@@ -71,6 +71,9 @@ start:	showcontext
 	$(GC) container clusters get-credentials $(CLUSTER_NAME) --zone $(ZONE) | tee -a $(LOG_DIR)/gcp-start.log
 	# Use back-ticks for subshell because $(...) notation is used by make
 	$(KC) config rename-context `$(KC) config current-context` $(GCP_CTX) | tee -a $(LOG_DIR)/gcp-start.log
+	$(KC) config use-context ${GCP_CTX}  
+	$(KC) create ns ${NS}
+	$(KC) config set-context ${GCP_CTX} --namespace=${NS}
 
 stop:
 	$(GC) container clusters delete $(CLUSTER_NAME) --zone $(ZONE) --quiet | tee $(LOG_DIR)/gcp-stop.log

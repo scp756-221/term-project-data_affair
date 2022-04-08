@@ -391,7 +391,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(flask_http_request_duration_seconds_count{status!=\"200\"}[1m]))",
+              "expr": "sum(rate(flask_http_request_duration_seconds_count{status!=\"200\",status!=\"308\"}[1m]))",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,

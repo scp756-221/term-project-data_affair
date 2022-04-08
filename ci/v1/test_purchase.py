@@ -96,7 +96,7 @@ def test_update_purchase(pserv, purchase_tx):
     pserv.delete(p_id)
 
 
-def get_purchase_by_user(pserv, purchase_tx):
+def test_get_purchase_by_user(pserv, purchase_tx):
     trc1, p_id1 = pserv.create(purchase_tx[0], purchase_tx[1], purchase_tx[2])
     assert trc1 == 200
     trc2, p_id2 = pserv.create('123-456-789', purchase_tx[1], purchase_tx[3])
