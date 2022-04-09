@@ -23,7 +23,7 @@ import requests
 import simplejson as json
 
 # Integer value 0 <= v < 100, denoting proportion of
-# calls to `get_song` to return 500 from
+# calls to `get_purchase` to return 500 from
 PERCENT_ERROR = 50
 
 # The application

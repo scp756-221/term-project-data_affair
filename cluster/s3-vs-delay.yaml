@@ -21,3 +21,5 @@ spec:
         host: cmpt756s3
         port:
           number: 30010
+        subset: v1
+    timeout: 2s
