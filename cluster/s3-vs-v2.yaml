@@ -49,8 +49,8 @@ spec:
     - destination:
         host: cmpt756s3
         subset: v1
-      weight: 90
+      weight: 70
     - destination:
         host: cmpt756s3
         subset: v2
-      weight: 10
+      weight: 30
