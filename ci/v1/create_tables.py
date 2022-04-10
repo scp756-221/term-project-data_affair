@@ -77,8 +77,15 @@ def create_tables(url, region, access_key_id,
     )
     pt = dynamodb.create_table(
         TableName=purchase,
-        AttributeDefinitions=[{
-            "AttributeName": "purchase_id", "AttributeType": "S"}],
+        AttributeDefinitions=[
+            {
+                "AttributeName": "purchase_id",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "user_id",
+                "AttributeType": "S"
+            }],
         KeySchema=[{"AttributeName": "purchase_id", "KeyType": "HASH"}],
         GlobalSecondaryIndexes=[{
             'IndexName': 'user_id-index',
