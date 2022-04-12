@@ -12,9 +12,7 @@ Create a tpl-vars.txt file using the tpl-vars-blank.txt in the same directory as
 
 ### Instantiate every template file using this command:
 
-`$ tools/shell.sh`
-
-`/home/k8s#  make -f k8s-tpl.mak templates`
+`make -f k8s-tpl.mak templates`
 
 
 ### The Google Cloud Platform 
@@ -63,12 +61,14 @@ For our project, we have chosen Google Cloud Platform as the PAAS for deploying 
 
 Once all the changes have been made and services are ready to be deployed, use the following command to deploy them:
 
-`make -f k8s.mak gw db s2 s3 s1 or  `
+`make -f k8s.mak gw db s1 s2 s3`
 
-Use the following command to ensure metric services are installed for our deployed services:
+Or use the following command to ensure that metrics and observation services are deployed along with the microservices:
 
 `make -f k8s.mak provision`  
+#### Get the URL for the microservice deployed:
 
+`kubectl -n istio-system get service istio-ingressgateway | cut -c -140`
 
 ### Get the URL for the metric services running
 
@@ -89,18 +89,20 @@ Use the following command to ensure metric services are installed for our deploy
 
 In case of errors or to check the history, use the following command to view logs:
 
-`kubectl logs --selector app=cmpt756s1 --container cmpt756s1 --tail=-1` 
+`kubectl logs --selector app='service_name' --container 'service_name' --tail=-1` 
+
+Or can be viewed from k9s.
 
 
 ## Scaling
 
 To Scale a particular service use the following command:
 
-`kubectl scale deploy/'service_name' 'number_of_replicas' `
+`kubectl scale deploy/'service_name' --replicas='number_of_replicas'`
 
 Example: Scale the application db services to 3 replicas: 
 
-`kubectl scale deploy/cmpt756db 3 `
+`kubectl scale deploy/cmpt756db --replicas=3 `
 
 And to check if it has been reflected: 
 
