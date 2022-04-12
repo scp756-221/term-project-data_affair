@@ -40,19 +40,40 @@ This will also make kubectl use context to gcp756, create a namespace c756ns and
 
 ### Deploying the services
 
-Once all the changes have been made and services are ready to be deployed, use the following command to deploy them:
-
-`make -f k8s.mak gw db s1 s2 s3`
-
-Or use the following command to ensure that metrics and observation services are deployed along with the microservices:
+Use the following command to ensure that metrics and observation services are deployed along with the microservices:
 
 `make -f k8s.mak provision`  
 
-This command will also install service mesh and istio and enable istio injection. In addition, it will also run the loader to initialize the DynamoDB tables.
+This command will also install service mesh and istio and enable istio injection. In addition, it will also run the cloudformation stack to create DynamoDB tables and loader to initialize data in the DynamoDB tables.
 
 #### Get the URL for the microservice deployed:
 
 `kubectl -n istio-system get service istio-ingressgateway | cut -c -140`
+
+### Testing the API calls:
+
+#### Create purchase:
+
+`IGW=<URL> BODY_PURCHASE=<BODY> make -e -f api.mak cpurchase`
+
+Replace IGW with the url obtained from the previous command to paste here.
+
+Example:
+`IGW=34.83.42.29 BODY_PURCHASE='{ "music_id":"1", "user_id":"1", "purchase_amount":"50" }' make -e -f api.mak cpurchase`
+Respone:
+`{"purchase_id":"d416ab13-53ec-4a30-8585-39f46fb21166"}`
+#### Read purchase:
+
+`IGW=<URL> PURCHASE_ID=<PURCHASE_ID> make -e -f api.mak rpurchase`
+
+Example:
+`IGW=34.83.42.29 PURCHASE_ID=d416ab13-53ec-4a30-8585-39f46fb21166 make -e -f api.mak rpurchase`
+
+#### Delete Purchase:
+`IGW=<URL> PURCHASE_ID2=<PURCHASE_ID> make -e -f api.mak dpurchase`
+
+Example:
+`IGW=34.83.42.29 PURCHASE_ID2=d416ab13-53ec-4a30-8585-39f46fb21166 make -e -f api.mak dpurchase`
 
 ### Get the URL for the metric services running
 

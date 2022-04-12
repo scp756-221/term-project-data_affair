@@ -61,6 +61,12 @@ BODY_MUSIC= { \
   "SongTitle": "Rio" \
 }
 
+BODY_PURCHASE = { \
+  "music_id": "0d2a2931-8be6-48fc-aa9e-5a0f9f536bd3", \
+  "user_id": "d555a8cc-8e2d-4579-a15e-0edc986b7690", \
+  "purchase_amount": "50" \
+}
+
 # this is a token for ???
 TOKEN=Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMDI3Yzk5ZWYtM2UxMi00ZmM5LWFhYzgtMTcyZjg3N2MyZDI0IiwidGltZSI6MTYwMTA3NDY0NC44MTIxNjg2fQ.hR5Gbw5t2VMpLcj8yDz1B6tcWsWCFNiHB_KHpvQVNls
 BODY_TOKEN={ \
@@ -74,6 +80,7 @@ MUSIC_ID=2995bc8b-d872-4dd1-b396-93fde2f4bfff
 # it's convenient to have a second set of id to test deletion (DELETE uses these id with the suffix of 2)
 USER_ID2=9175a76f-7c4d-4a3e-be57-65856c6bb77e
 MUSIC_ID2=8ed63e4f-3b1e-47f8-beb8-3604516e5a2d
+PURCHASE_ID2=aa183da7-23e8-47a6-8f80-68b5e4593b87
 
 
 # POST is used for user (apipost) or music (apimusic) to create a new record
@@ -85,6 +92,10 @@ cmusic:
 	echo curl --location --request POST 'http://$(IGW)/api/v1/music/' --header '$(TOKEN)' --header 'Content-Type: application/json' --data-raw '$(BODY_MUSIC)' > $(LOG_DIR)/cmusic.out
 	$(CURL) --location --request POST 'http://$(IGW)/api/v1/music/' --header '$(TOKEN)' --header 'Content-Type: application/json' --data-raw '$(BODY_MUSIC)' | tee -a $(LOG_DIR)/cmusic.out
 
+cpurchase:
+	echo curl --location --request POST 'http://$(IGW)/api/v1/purchase/' --header '$(TOKEN)' --header 'Content-Type: application/json' --data-raw '$(BODY_PURCHASE)' > $(LOG_DIR)/cpurchase.out
+	$(CURL) --location --request POST 'http://$(IGW)/api/v1/purchase/' --header '$(TOKEN)' --header 'Content-Type: application/json' --data-raw '$(BODY_PURCHASE)' | tee -a $(LOG_DIR)/cpurchase.out
+
 # PUT is used for user (update) to update a record
 uuser:
 	echo curl --location --request PUT 'http://$(IGW)/api/v1/user/$(USER_ID)' --header '$(TOKEN)' --header 'Content-Type: application/json' --data-raw '$(BODY_USER)' > $(LOG_DIR)/uuser.out
@@ -95,6 +106,10 @@ rmusic:
 	echo curl --location --request GET 'http://$(IGW)/api/v1/music/$(MUSIC_ID)' --header '$(TOKEN)' > $(LOG_DIR)/rmusic.out
 	$(CURL) --location --request GET 'http://$(IGW)/api/v1/music/$(MUSIC_ID)' --header '$(TOKEN)' | tee -a $(LOG_DIR)/rmusic.out
 
+rpurchase:
+	echo curl --location --request GET 'http://$(IGW)/api/v1/purchase/$(PURCHASE_ID)' --header '$(TOKEN)' > $(LOG_DIR)/rpurchase.out
+	$(CURL) --location --request GET 'http://$(IGW)/api/v1/purchase/$(PURCHASE_ID)' --header '$(TOKEN)' | tee -a $(LOG_DIR)/rpurchase.out
+
 # DELETE is used with user or music to delete a record
 duser:
 	echo curl --location --request DELETE 'http://$(IGW)/api/v1/user/$(USER_ID2)' --header '$(TOKEN)' > $(LOG_DIR)/duser.out
@@ -103,6 +118,10 @@ duser:
 dmusic:
 	echo curl --location --request DELETE 'http://$(IGW)/api/v1/music/$(MUSIC_ID2)' --header '$(TOKEN)' > $(LOG_DIR)/dmusic.out
 	$(CURL) --location --request DELETE 'http://$(IGW)/api/v1/music/$(MUSIC_ID2)' --header '$(TOKEN)' | tee -a $(LOG_DIR)/dmusic.out
+
+dpurchase:
+	echo curl --location --request DELETE 'http://$(IGW)/api/v1/purchase/$(PURCHASE_ID2)' --header '$(TOKEN)' > $(LOG_DIR)/dpurchase.out
+	$(CURL) --location --request DELETE 'http://$(IGW)/api/v1/purchase/$(PURCHASE_ID2)' --header '$(TOKEN)' | tee -a $(LOG_DIR)/dpurchase.out
 
 # PUT is used for login/logoff too
 apilogin:
